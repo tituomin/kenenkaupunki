@@ -1,7 +1,6 @@
 Django
 django-tastypie
 django-modeltranslation
--e git+https://github.com/juyrjola/munigeo#egg=django-munigeo
 pytz
 
 #munigeo
@@ -10,6 +9,11 @@ six
 pyyaml
 #unicodecsv
 
-
+geopy
 psycopg2
 south
+requests
+
+django-extensions
+
+
