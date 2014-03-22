@@ -1,7 +1,6 @@
 Django
 django-tastypie
 django-modeltranslation
-pytz
 
 #munigeo
 django-mptt
