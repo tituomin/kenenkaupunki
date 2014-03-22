@@ -1,4 +1,4 @@
-from django.db import models
+from django.contrib.gis.db import models
 
 from munigeo.models import AdministrativeDivision
 
@@ -29,3 +29,21 @@ class Respondent(models.Model):
     scale_agree_add_density = models.FloatField(null=True)
     scale_agree_add_my_area_density_for_less_cars = models.FloatField(null=True)
     scale_my_area_could_be_built_more = models.FloatField(null=True)
+
+
+
+class MapAnswer(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    
+    respondent = models.ForeignKey(Respondent, db_index=True, null=False)
+    createtime = models.DateTimeField(null=False)
+
+    geometry = models.GeometryField()
+
+    type = models.CharField(max_length=10, null=False)
+    category = models.CharField(max_length=84, null=False)
+
+    text_content = models.TextField(null=True)
+    geom_source = models.TextField(null=False)
+
+    divisions = models.ManyToManyField('munigeo.AdministrativeDivision')
