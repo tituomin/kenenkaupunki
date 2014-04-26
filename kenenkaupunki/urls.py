@@ -1,12 +1,14 @@
 from django.conf.urls import patterns, include, url
+from rest_framework.routers import DefaultRouter
 
-from django.contrib import admin
-admin.autodiscover()
+from geoanswers import api
+from munigeo.api import AdministrativeDivisionViewSet
+
+router = DefaultRouter()
+router.register(r'respondents', api.RespondentViewSet)
+router.register(r'answers', api.MapAnswerViewSet)
+router.register(r'divisions', AdministrativeDivisionViewSet)
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'kenenkaupunki.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include(router.urls))
 )

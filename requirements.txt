@@ -1,5 +1,7 @@
 Django
 django-modeltranslation
+django-filter
+djangorestframework
 
 django-mptt
 six

@@ -150,6 +150,8 @@ def clean_text(head, tail):
     return (head + tail).replace('  LINEBREAK ', "\n")
 
 def import_map_answers(filename):
+    answers = []
+    print('Reading answers.')
     with open(filename, 'r') as tsvfile:
         reader = csv.DictReader(tsvfile, delimiter="\t")
         for row in reader:
@@ -166,17 +168,25 @@ def import_map_answers(filename):
                 category=row.get('valuename'),
                 text_content=text_content
             )
-            mapanswer.geometry = mapanswer.geometry_original.transform(4326)
-            mapanswer.save()
+            mapanswer.geometry = mapanswer.geometry_original.transform(
+                4326, clone=True)
+            answers.append(mapanswer)
 
-            if (mapanswer.geometry.geom_type == 'Point' or
-                mapanswer.geometry.length == 0
-            ):
-                qs = AdministrativeDivisionGeometry.objects.filter(
-                    boundary__contains_properly=mapanswer.geometry)
-            else:
-                qs = AdministrativeDivisionGeometry.objects.filter(
-                    boundary__intersects=mapanswer.geometry)
-            for d_geom in qs:
-                if d_geom is not None:
-                    mapanswer.divisions.add(d_geom.division)
+    print('Bulk creating.')
+    MapAnswer.objects.bulk_create(answers)
+    connect_dots(MapAnswer.objects.all())
+
+def connect_dots(answers):
+    print('Connecting the dots.')
+    for mapanswer in answers:
+        if (mapanswer.geometry.geom_type == 'Point' or
+            mapanswer.geometry.length == 0
+        ):
+            qs = AdministrativeDivisionGeometry.objects.filter(
+                boundary__contains_properly=mapanswer.geometry)
+        else:
+            qs = AdministrativeDivisionGeometry.objects.filter(
+                boundary__intersects=mapanswer.geometry)
+        for d_geom in qs:
+            if d_geom is not None:
+                mapanswer.divisions.add(d_geom.division)

@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     'modeltranslation',
     'munigeo',
     'south',
-    'geoanswers'
+    'rest_framework',
+    'geoanswers',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -99,3 +100,16 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 20,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 1000,
+#    'URL_FIELD_NAME': 'resource_uri',
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+}

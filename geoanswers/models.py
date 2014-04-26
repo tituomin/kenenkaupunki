@@ -33,14 +33,13 @@ class Respondent(models.Model):
 
     def __str__(self):
         def field_str(field):
-            fieldname = field.name
-            return fieldname + ": " + str(getattr(self, fieldname, '<empty>'))
+            return field.name + ": " + str(getattr(self, field.name, '<empty>'))
         return "\n".join(map(field_str, __class__._meta.fields))
 
 
 class MapAnswer(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
-    respondent = models.ForeignKey(Respondent, db_index=True, null=True, default=None)
+    respondent = models.ForeignKey(Respondent, db_index=True, null=True, default=None, related_name='answers')
     createtime = models.DateTimeField(null=False)
     geometry = models.GeometryField(null=True, default=None)
     geometry_original = models.GeometryField(srid=3067)
