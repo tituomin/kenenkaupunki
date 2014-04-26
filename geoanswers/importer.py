@@ -1,7 +1,12 @@
-from geoanswers.models import Respondent, MapAnswer
-from munigeo.models import AdministrativeDivision, AdministrativeDivisionType, AdministrativeDivisionGeometry
 import csv
 import re
+
+from munigeo.models import (
+    AdministrativeDivision,
+    AdministrativeDivisionType,
+    AdministrativeDivisionGeometry
+)
+from .models import Respondent, MapAnswer
 
 def get_int(row, key):
     try:
@@ -77,40 +82,52 @@ def import_background_answers(filename):
                     'kolmenneksi-tarkein'
                 ),
                 probability_stay_five_years=get_string(row,
-                    'kuinka-todennakoisesti-asut-alueella-viela-5-vuoden-kuluttua'
+                    'kuinka-todennakoisesti-asut-alueella-'
+                    'viela-5-vuoden-kuluttua'
                 ),
                 scale_agree_high_rise=slider_value(row,
                     'min-erittain-korkea-asuinalue-sopii-helsinkiin'
                 ),
                 scale_enjoy_outdoors_large_woods=slider_value(row,
-                    'min-mieluiten-ulkoilen-laajassa-metsassa-vaikka-se-olisi-vahan-kauempana-kotoa'
+                    'min-mieluiten-ulkoilen-laajassa-metsassa-'
+                    'vaikka-se-olisi-vahan-kauempana-kotoa'
                 ),
                 scale_enjoy_culture_urban_meetings=slider_value(row,
-                    'min-kiinnostavin-uusi-kulttuuri-syntyy-kohtaamisista-kaupungissa'
+                    'min-kiinnostavin-uusi-kulttuuri-'
+                    'syntyy-kohtaamisista-kaupungissa'
                 ),
                 scale_prefer_daily_shopping_near=slider_value(row,
-                    'min-haluan-tehda-paivittaiset-ostokseni-vahan-kerrallaan-lahella-kotia'
+                    'min-haluan-tehda-paivittaiset-ostokseni-'
+                    'vahan-kerrallaan-lahella-kotia'
                 ),
                 scale_would_use_rail_transport_more=slider_value(row,
-                    'min-jos-raideliikenteen-yhteyksia-parannetaan-kayttaisin-raideliikennetta-nykyista-enemman-seka-tyomatkoihini-etta-vapaa-ajalla'
+                    'min-jos-raideliikenteen-yhteyksia-parannetaan-'
+                    'kayttaisin-raideliikennetta-nykyista-enemman-'
+                    'seka-tyomatkoihini-etta-vapaa-ajalla'
                 ),
                 scale_agree_suburbs_build_near_stations=slider_value(row,
-                    'min-esikaupungeissa-tehokkain-rakentaminen-kannattaisi-keskittaa-asemien-laheisyyteen'
+                    'min-esikaupungeissa-tehokkain-rakentaminen-'
+                    'kannattaisi-keskittaa-asemien-laheisyyteen'
                 ),
-                scale_enjoy_metropolis_fascinating_possibilities=slider_value(row,
-                    'min-suurkaupunki-ja-sen-monet-mahdollisuudet-ovat-kiehtovia'
+                scale_enjoy_metropolis_fascinating_possibilities=slider_value(
+                    row,
+                    'min-suurkaupunki-ja-sen-monet-mahdollisuudet-'
+                    'ovat-kiehtovia'
                 ),
                 scale_agree_bulevardisation=slider_value(row,
-                    'min-helsingin-keskustaan-johtavien-isojen-teiden-muuttaminen-puistokaduiksi-on-hyva-idea'
+                    'min-helsingin-keskustaan-johtavien-isojen-teiden-'
+                    'muuttaminen-puistokaduiksi-on-hyva-idea'
                 ),
                 scale_agree_add_density=slider_value(row,
                     'min-koska-helsinki-kasvaa-pitaa-sita-tiiviistaa'
                 ),
                 scale_agree_add_my_area_density_for_less_cars=slider_value(row,
-                    'min-autoilun-tarpeen-vahentamiseksi-olen-valmis-hyvaksymaan-tiiviimpaa-rakentamista-asuinalueellani'
+                    'min-autoilun-tarpeen-vahentamiseksi-olen-valmis-'
+                    'hyvaksymaan-tiiviimpaa-rakentamista-asuinalueellani'
                 ),
                 scale_my_area_could_be_built_more=slider_value(row,
-                    'min-asuinalueeltani-loytyy-viela-paikkoja-joita-voisi-kayttaa-rakentamiseen'
+                    'min-asuinalueeltani-loytyy-viela-paikkoja-'
+                    'joita-voisi-kayttaa-rakentamiseen'
                 )
             )
             respondent.save()
@@ -119,7 +136,7 @@ def clean_text(head, tail):
     tail = tail.rstrip()
     if tail == 'x':
         tail = ''
-    return (head + tail).replace('LINEBREAK', "\n")
+    return (head + tail).replace('  LINEBREAK ', "\n")
 
 def import_map_answers(filename):
     import pprint as pp
@@ -155,5 +172,3 @@ def import_map_answers(filename):
             for d_geom in qs:
                 if d_geom is not None:
                     mapanswer.divisions.add(d_geom.division)
-
-
