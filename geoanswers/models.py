@@ -31,19 +31,14 @@ class Respondent(models.Model):
     scale_my_area_could_be_built_more = models.FloatField(null=True)
 
 
-
 class MapAnswer(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
-    
-    respondent = models.ForeignKey(Respondent, db_index=True, null=False)
+    respondent = models.ForeignKey(Respondent, db_index=True, null=True, default=None)
     createtime = models.DateTimeField(null=False)
-
-    geometry = models.GeometryField()
-
-    type = models.CharField(max_length=10, null=False)
+    geometry = models.GeometryField(null=True, default=None)
+    geometry_original = models.GeometryField(srid=3067)
+    type = models.CharField(max_length=10, null=False)  # todo
     category = models.CharField(max_length=84, null=False)
-
     text_content = models.TextField(null=True)
-    geom_source = models.TextField(null=False)
-
     divisions = models.ManyToManyField('munigeo.AdministrativeDivision')
+

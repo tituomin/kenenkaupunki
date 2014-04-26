@@ -1,5 +1,5 @@
-from geoanswers.models import Respondent
-from munigeo.models import AdministrativeDivision, AdministrativeDivisionType
+from geoanswers.models import Respondent, MapAnswer
+from munigeo.models import AdministrativeDivision, AdministrativeDivisionType, AdministrativeDivisionGeometry
 import csv
 import re
 
@@ -114,3 +114,46 @@ def import_background_answers(filename):
                 )
             )
             respondent.save()
+
+def clean_text(head, tail):
+    tail = tail.rstrip()
+    if tail == 'x':
+        tail = ''
+    return (head + tail).replace('LINEBREAK', "\n")
+
+def import_map_answers(filename):
+    import pprint as pp
+    with open(filename, 'r') as tsvfile:
+        reader = csv.DictReader(tsvfile, delimiter="\t")
+        for row in reader:
+            text_content = clean_text(row.get('Kerro-lisää:'), row.get(''))
+            try:
+                respondent = Respondent.objects.get(pk=int(row.get('user_id')))
+            except Respondent.DoesNotExist as e:
+                respondent = None
+            mapanswer = MapAnswer(
+                id=int(row.get('feature_id')),
+                respondent=respondent,
+                createtime=row.get('createtime'),
+                geometry_original=row.get('wkt'),
+                category=row.get('valuename'),
+                text_content=text_content
+            )
+            mapanswer.geometry=mapanswer.geometry_original.transform(4326)
+            mapanswer.save()
+
+            if (mapanswer.geometry_original.geom_type == 'Point' or
+                mapanswer.geometry_original.length == 0
+            ):
+                qs = AdministrativeDivisionGeometry.objects.filter(
+                    boundary__contains_properly=mapanswer.geometry_original
+                )
+            else:
+                qs = AdministrativeDivisionGeometry.objects.filter(
+                    boundary__intersects=mapanswer.geometry_original
+                )
+            for d_geom in qs:
+                if d_geom is not None:
+                    mapanswer.divisions.add(d_geom.division)
+
+
