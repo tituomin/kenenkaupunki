@@ -30,6 +30,12 @@ class Respondent(models.Model):
     scale_agree_add_my_area_density_for_less_cars = models.FloatField(null=True)
     scale_my_area_could_be_built_more = models.FloatField(null=True)
 
+    def __str__(self):
+        def field_str(field):
+            fieldname = field.name
+            return fieldname + ": " + str(getattr(self, fieldname, '<empty>'))
+        return "\n".join(map(field_str, __class__._meta.fields))
+
 
 class MapAnswer(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
