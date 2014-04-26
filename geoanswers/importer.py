@@ -28,6 +28,15 @@ def slider_value(row, key):
         return 50.0
     return float(result.replace(',', '.'))
 
+def age(row, key):
+    s = row.get(key).strip()
+    if len(s) == 0:
+        return None, None
+    low, high = s.split("-")
+    if low == 'alle': low = None
+    if high == '': high = None
+    return low, high
+
 def get_neighborhood(row, key):
     neighborhood_name_match = re.match(r'([^(]*) ?(\([^)]+\))?', row[key])
     if neighborhood_name_match:
@@ -49,6 +58,7 @@ def import_background_answers(filename):
     with open(filename, 'r') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
         for row in reader:
+            age_low, age_high = age(row, 'ika')
             respondent = Respondent(
                 id=int(row.get(
                     'user_id'
@@ -59,7 +69,8 @@ def import_background_answers(filename):
                 createtime=row.get(
                     'createtime'
                 ),
-                age=get_int(row, 'ika'),
+                age_low=age_low,
+                age_high=age_high,
                 language=get_string(row,
                     'user-language'
                 ),
@@ -139,7 +150,6 @@ def clean_text(head, tail):
     return (head + tail).replace('  LINEBREAK ', "\n")
 
 def import_map_answers(filename):
-    import pprint as pp
     with open(filename, 'r') as tsvfile:
         reader = csv.DictReader(tsvfile, delimiter="\t")
         for row in reader:
@@ -156,19 +166,17 @@ def import_map_answers(filename):
                 category=row.get('valuename'),
                 text_content=text_content
             )
-            mapanswer.geometry=mapanswer.geometry_original.transform(4326)
+            mapanswer.geometry = mapanswer.geometry_original.transform(4326)
             mapanswer.save()
 
-            if (mapanswer.geometry_original.geom_type == 'Point' or
-                mapanswer.geometry_original.length == 0
+            if (mapanswer.geometry.geom_type == 'Point' or
+                mapanswer.geometry.length == 0
             ):
                 qs = AdministrativeDivisionGeometry.objects.filter(
-                    boundary__contains_properly=mapanswer.geometry_original
-                )
+                    boundary__contains_properly=mapanswer.geometry)
             else:
                 qs = AdministrativeDivisionGeometry.objects.filter(
-                    boundary__intersects=mapanswer.geometry_original
-                )
+                    boundary__intersects=mapanswer.geometry)
             for d_geom in qs:
                 if d_geom is not None:
                     mapanswer.divisions.add(d_geom.division)

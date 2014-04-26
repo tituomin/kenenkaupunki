@@ -7,7 +7,8 @@ class Respondent(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
     property_id = models.PositiveIntegerField(null=False, unique=True)
     createtime = models.DateTimeField(null=False)
-    age = models.PositiveIntegerField(null=True)
+    age_low = models.PositiveIntegerField(null=True)
+    age_high = models.PositiveIntegerField(null=True)
     language = models.CharField(max_length=2, null=True)
 
     life_situation = models.CharField(max_length=200, null=True)
