@@ -1,8 +1,6 @@
 Django
-django-tastypie
 django-modeltranslation
 
-#munigeo
 django-mptt
 six
 pyyaml
@@ -15,4 +13,4 @@ requests
 
 django-extensions
 
-
+-e git+https://github.com/juyrjola/munigeo#egg=django-munigeo
