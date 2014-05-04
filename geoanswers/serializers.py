@@ -1,14 +1,14 @@
 
 from rest_framework import serializers
-from munigeo.api import GeoModelSerializer
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from .models import Respondent, MapAnswer
 
 class RespondentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Respondent
 
-class MapAnswerSerializer(GeoModelSerializer):
+class MapAnswerSerializer(GeoFeatureModelSerializer):
     class Meta:
+        geo_field = 'geometry'
         model = MapAnswer
-        exclude = ["geometry_original", "type"]
-
+        exclude = ["geometry_original"]

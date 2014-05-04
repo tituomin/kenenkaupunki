@@ -48,3 +48,5 @@ class MapAnswer(models.Model):
     text_content = models.TextField(null=True)
     divisions = models.ManyToManyField('munigeo.AdministrativeDivision')
 
+    def type(self):
+        return 'Feature'
