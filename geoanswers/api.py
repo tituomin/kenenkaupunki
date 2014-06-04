@@ -5,28 +5,33 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
+from munigeo.models import AdministrativeDivision
+from munigeo.api import AdministrativeDivisionSerializer
+
 from .serializers import RespondentSerializer, MapAnswerSerializer
 from .models import Respondent, MapAnswer
 
-# class RespondentViewSet(viewsets.ReadOnlyModelViewSet):
-#     """
-#     Respondents to the questionnaire.
+@api_view(['GET'])
+def division_list(request):
+    if (request.method != 'GET' or
+        'type' not in request.GET):
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-#     """
-#     queryset = Respondent.objects.all()
-#     serializer_class = RespondentSerializer
-#     # pagination_serializer_class = pagination.BasePaginationSerializer
-#     # paginate_by = 500
-#     filter_fields = ['neighborhood']
-#
-# class MapAnswerViewSet(viewsets.ReadOnlyModelViewSet):
-#     """
-#     MapAnswers to the questionnaire.
+    type_ = request.GET['type']
+    divisions = AdministrativeDivision.objects.filter(type=type_)
+    serializer = AdministrativeDivisionSerializer(divisions, many=True)
+    return Response(serializer.data)
 
-#     """
-#     queryset = MapAnswer.objects.all()
-#     serializer_class = MapAnswerSerializer
-#     filter_fields = ['respondent__neighborhood', 'category']
+@api_view(['GET'])
+def individual_division(request, pk):
+    if request.method != 'GET':
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    try:
+        division = AdministrativeDivision.objects.get(pk=pk)
+    except AdministrativeDivision.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = AdministrativeDivisionSerializer(division)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def respondent_list(request):
