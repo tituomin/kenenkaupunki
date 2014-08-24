@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from munigeo.models import AdministrativeDivision
-from munigeo.api import AdministrativeDivisionSerializer
+from munigeo.api import AdministrativeDivisionSerializer, srid_to_srs
 
 from .serializers import RespondentSerializer, MapAnswerSerializer
 from .models import Respondent, MapAnswer
@@ -19,7 +19,9 @@ def division_list(request):
 
     type_ = request.GET['type']
     divisions = AdministrativeDivision.objects.filter(type=type_)
-    serializer = AdministrativeDivisionSerializer(divisions, many=True)
+    serializer = AdministrativeDivisionSerializer(
+        divisions, many=True,
+        context={'request': request, 'srs': srid_to_srs(None)})
     return Response(serializer.data)
 
 @api_view(['GET'])
